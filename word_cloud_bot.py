@@ -49,21 +49,22 @@ def run_bot(reddit, comments_replied_to5) :
             # Fetch username of author of the comment to be replied to
             username = comment.author.name
 
+            # If the file already exists, erase its contents
+            if os.path.isfile('comment_history.txt') :
+                open('comment_history.txt', 'w').close()
+
             # Go through user's recent comment history
 
-            for comment2 in reddit.redditor(username).comments.new(limit=1000) :
+            for comment2 in reddit.redditor(username).comments.new(limit=100) :
 
                 # Add past 1000 comments to .txt file
 
                 comment_history = []
 
-                # If the file already exists, erase its contents
-                if os.path.isfile('comment_history.txt') :
-                    open('comment_history.txt', 'w').close()
-
                 # Put each comment into the file
                 with open('comment_history.txt', 'a') as file :
-                    file.write(comment.body + '\n')
+                    file.write(comment2.body + '\n')
+                    print(comment2.body)
 
             # Read file
             with open('comment_history.txt', 'r') as file:
