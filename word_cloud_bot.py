@@ -4,7 +4,7 @@
 #
 # Last edited July 10, 2017
 #
-
+# TODO -- 1) save the matplotlab image to file
 
 # praw is a tool that makes interacting with reddit much easier.
 #
@@ -24,15 +24,27 @@ from wordcloud import WordCloud
 
 import matplotlib.pyplot as plt
 
+# To upload WordCloud to imgur
+
+import pyimgur
+
 # Login the bot into reddit
 
 
-def authenticate() :
-    print('Authenticating...')
+def authenticate_reddit() :
+    print('Authenticating reddit account...')
     reddit = praw.Reddit('WordCloudBot', user_agent='yeah_bot_test v0.1')
     print('Authenticated as ' + str(reddit.user.me()))
     return reddit
 
+# Login the bot into imgur
+
+def authenticate_imgur() :
+    print('Authenticating imgur account...')
+    client_id = '58b015847759ef5'
+    imgur = pyimgur.Imgur(client_id)
+    print('Imgur account authenticated.')
+    return imgur
 
 def run_bot(reddit, comments_replied_to5) :
 
@@ -73,10 +85,17 @@ def run_bot(reddit, comments_replied_to5) :
             # Generate the word cloud
             create_cloud(comment_history)
 
+            # Save image to Pictures as wordcloud.png
+
+
+
+            # Upload image to imgur
+            filepath = 'Pictures\wordcloud.png'
+            image = imgur.upload_image(filepath, title='/u/'+ username + '\'s Word Cloud')
+            print(str(image.url))
             # reply via comment
 
-            # comment.reply('You have said the word \'yeah\' ' + str(yeah_count) + ' times in your commenting history.\n\n '
-                                                                          #  '[Yeah!](https://byyeah.com/assets/img/product/outofstock.jpg)')
+            # comment.reply('Here is a word cloud of your past 100 comments: ' + image.url)
             print('Replied to ' + comment.id)
 
             # Add comment ID to replied to list
@@ -129,7 +148,8 @@ def create_cloud(comment_history) :
     plt.axis('off')
     plt.show()
 
-reddit = authenticate()
+reddit = authenticate_reddit()
+imgur = authenticate_imgur()
 
 # To prevent spam, create list of comments already replied to
 
