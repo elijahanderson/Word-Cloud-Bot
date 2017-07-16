@@ -1,10 +1,10 @@
-# Word Cloud Bot -- Loops through user's history, creates a word cloud image with their most used words
+# Word Cloud Bot -- Loops through user's history, creates a word cloud image with their most used words, replies
+# with imgur.com link
 #
 # By Eli Anderson
 #
 # Last edited July 10, 2017
 #
-# TODO -- 1) save the matplotlab image to file
 
 # praw is a tool that makes interacting with reddit much easier.
 #
@@ -67,7 +67,7 @@ def run_bot(reddit, comments_replied_to5) :
 
             # Go through user's recent comment history
 
-            for comment2 in reddit.redditor(username).comments.new(limit=100) :
+            for comment2 in reddit.redditor(username).comments.new(limit=1000) :
 
                 # Add past 1000 comments to .txt file
 
@@ -87,15 +87,15 @@ def run_bot(reddit, comments_replied_to5) :
 
             # Save image to Pictures as wordcloud.png
 
-
+            filepath = 'D:\Programming\Python Programs\Word-Cloud-Bot\wordcloud.png'
 
             # Upload image to imgur
-            filepath = 'Pictures\wordcloud.png'
-            image = imgur.upload_image(filepath, title='/u/'+ username + '\'s Word Cloud')
-            print(str(image.url))
+
+            uploaded_image = imgur.upload_image(filepath, title='/u/'+ username + '\'s Word Cloud')
+            print('IMAGE URL: ' + str(uploaded_image.link))
             # reply via comment
 
-            # comment.reply('Here is a word cloud of your past 100 comments: ' + image.url)
+            comment.reply('Here is a word cloud of your past 100 comments: ' + uploaded_image.link)
             print('Replied to ' + comment.id)
 
             # Add comment ID to replied to list
@@ -146,8 +146,12 @@ def create_cloud(comment_history) :
     # display image
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    plt.show()
 
+    # save image to the bot's folder
+    filepath = 'D:\Programming\Python Programs\Word-Cloud-Bot\wordcloud.png'
+    plt.savefig(filepath, bbox_inches='tight')
+
+    return wordcloud
 reddit = authenticate_reddit()
 imgur = authenticate_imgur()
 
